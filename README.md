@@ -6,7 +6,7 @@ Desarrollado en **Python + Django**, con interfaz HTML + Bootstrap y sin JavaScr
 **Evaluación 3 · Ingeniería de Software**
 **Integrantes:** Nicolás Román, David Rodríguez, Diego Vegas
 **Docente:** Cristian Carrasco
-**Repositorio:** [pegar enlace de GitHub]
+**Repositorio:** [https://github.com/Nikopteros/Evaluacion-3-Ingenieria-de-software.git]
 
 **Directorio de base de datos** hotel_rios_del_sur\database
 **Directorio de Informe** hotel_rios_del_sur\docs
@@ -47,7 +47,7 @@ Desarrollado en **Python + Django**, con interfaz HTML + Bootstrap y sin JavaScr
 No requiere instalar ninguna base de datos. Las tablas y los datos de ejemplo se crean automáticamente.
 
 ```bash
-git clone [URL del repositorio]
+git clone [https://github.com/Nikopteros/Evaluacion-3-Ingenieria-de-software.git]
 cd hotel-rios-del-sur
 python -m venv venv
 venv\Scripts\activate
