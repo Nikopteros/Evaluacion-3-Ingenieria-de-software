@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Habitaciones{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+  <h1 class="h3 mb-0">Habitaciones</h1>
+  <a class="btn btn-rio" href="{% url 'hotel:disponibilidad' %}">Consultar disponibilidad</a>
+</div>
+{% for tipo in tipos %}
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between flex-wrap gap-2">
+        <div>
+          <h2 class="h5 mb-1">{{ tipo.nombre }}</h2>
+          <p class="text-muted mb-2">{{ tipo.descripcion }}</p>
+        </div>
+        <div class="text-end">
+          <div class="fw-semibold fs-5">{{ tipo.precio_noche|clp }}</div>
+          <div class="text-muted small">por noche · hasta {{ tipo.capacidad }} persona{{ tipo.capacidad|pluralize }}</div>
+        </div>
+      </div>
+      {% if tipo.habitaciones.all %}
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>Habitación</th><th>Piso</th><th>Servicios</th></tr></thead>
+            <tbody>
+              {% for h in tipo.habitaciones.all %}
+                <tr>
+                  <td>{{ h.numero }}</td>
+                  <td>{{ h.piso }}</td>
+                  <td>{% for s in h.lista_servicios %}<span class="badge rounded-pill text-bg-light border me-1">{{ s }}</span>{% empty %}<span class="text-muted">—</span>{% endfor %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% empty %}
+  <p class="text-muted">Aún no hay habitaciones registradas.</p>
+{% endfor %}
+{% endblock %}

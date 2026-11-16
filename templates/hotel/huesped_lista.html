@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block titulo %}Huéspedes{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="h3 mb-0">Huéspedes</h1>
+  <a class="btn btn-rio" href="{% url 'hotel:huesped_nuevo' %}">Registrar huésped</a>
+</div>
+
+<form method="get" class="d-flex flex-wrap gap-2 mb-3">
+  <input type="search" name="q" value="{{ q }}" class="form-control w-auto" placeholder="Nombre, RUT, pasaporte o correo">
+  <button class="btn btn-outline-secondary">Buscar</button>
+  {% if q %}<a class="btn btn-link" href="{% url 'hotel:huesped_lista' %}">Limpiar</a>{% endif %}
+</form>
+
+<div class="table-responsive">
+  <table class="table table-hover bg-white shadow-sm">
+    <thead class="table-light">
+      <tr><th>Documento</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Nacionalidad</th><th>Reservas</th><th>Cuenta web</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for h in huespedes %}
+        <tr>
+          <td class="font-monospace small">{{ h.get_tipo_documento_display }} {{ h.numero_documento }}</td>
+          <td><a href="{% url 'hotel:huesped_detalle' h.pk %}">{{ h.nombre_completo }}</a></td>
+          <td class="small">{{ h.correo }}</td>
+          <td class="small">{{ h.telefono|default:"—" }}</td>
+          <td class="small">{{ h.nacionalidad }}</td>
+          <td>{{ h.total_reservas }}</td>
+          <td>{% if h.usuario_id %}<span class="badge text-bg-success">Sí</span>{% else %}<span class="badge text-bg-light border">No</span>{% endif %}</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="{% url 'hotel:huesped_editar' h.pk %}">Editar</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="text-muted">No se encontraron huéspedes.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'hotel/_paginacion.html' %}
+{% endblock %}

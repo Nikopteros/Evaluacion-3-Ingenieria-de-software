@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Mis reservas{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="h3 mb-0">Mis reservas</h1>
+  <a class="btn btn-rio" href="{% url 'hotel:disponibilidad' %}">Nueva reserva</a>
+</div>
+{% if reservas %}
+  <div class="table-responsive">
+    <table class="table bg-white shadow-sm">
+      <thead class="table-light">
+        <tr><th>Código</th><th>Habitación</th><th>Llegada</th><th>Salida</th><th>Noches</th><th>Total</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for r in reservas %}
+          <tr>
+            <td class="font-monospace">{{ r.codigo }}</td>
+            <td>{{ r.habitacion.numero }} · {{ r.habitacion.tipo.nombre }}</td>
+            <td>{{ r.fecha_entrada|date:"d-m-Y" }}</td>
+            <td>{{ r.fecha_salida|date:"d-m-Y" }}</td>
+            <td>{{ r.noches }}</td>
+            <td>{{ r.total|clp }}</td>
+            <td><span class="badge text-bg-{{ r.estado|color_estado }}">{{ r.get_estado_display }}</span></td>
+            <td class="text-end">
+              {% if r.puede_cancelarse %}
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'hotel:cliente_cancelar' r.pk %}">Cancelar</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="alert alert-info">Aún no tienes reservas. <a href="{% url 'hotel:disponibilidad' %}">Consulta la disponibilidad</a> para hacer la primera.</div>
+{% endif %}
+{% endblock %}

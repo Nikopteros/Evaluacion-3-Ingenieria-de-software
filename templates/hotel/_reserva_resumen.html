@@ -1,0 +1,10 @@
+{% load hotel_extras %}
+<dl class="row mb-0">
+  <dt class="col-sm-4">Código</dt><dd class="col-sm-8 font-monospace">{{ reserva.codigo }}</dd>
+  <dt class="col-sm-4">Huésped</dt><dd class="col-sm-8">{{ reserva.huesped.nombre_completo }} · {{ reserva.huesped.numero_documento }}</dd>
+  <dt class="col-sm-4">Habitación</dt><dd class="col-sm-8">{{ reserva.habitacion.numero }} · {{ reserva.habitacion.tipo.nombre }}</dd>
+  <dt class="col-sm-4">Fechas</dt><dd class="col-sm-8">{{ reserva.fecha_entrada|date:"d-m-Y" }} → {{ reserva.fecha_salida|date:"d-m-Y" }} ({{ reserva.noches }} noche{{ reserva.noches|pluralize }})</dd>
+  <dt class="col-sm-4">Personas</dt><dd class="col-sm-8">{{ reserva.cantidad_personas }}</dd>
+  <dt class="col-sm-4">Total</dt><dd class="col-sm-8">{{ reserva.total|clp }} <span class="text-muted small">({{ reserva.precio_noche|clp }} por noche)</span></dd>
+  <dt class="col-sm-4">Estado</dt><dd class="col-sm-8"><span class="badge text-bg-{{ reserva.estado|color_estado }}">{{ reserva.get_estado_display }}</span></dd>
+</dl>

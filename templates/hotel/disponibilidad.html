@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Disponibilidad{% endblock %}
+{% block contenido %}
+<h1 class="h3 mb-3">Consultar disponibilidad</h1>
+<form method="get" class="card card-body shadow-sm mb-4" novalidate>
+  <div class="row g-2">
+    {% for field in form %}
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label small mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+  <div class="mt-3"><button class="btn btn-rio">Buscar</button></div>
+</form>
+
+{% if resultados is not None %}
+  {% if resultados %}
+    <p class="text-muted">
+      {{ resultados|length }} habitación{{ resultados|length|pluralize:"es" }} libre{{ resultados|length|pluralize }}
+      del {{ form.cleaned_data.fecha_entrada|date:"d-m-Y" }} al {{ form.cleaned_data.fecha_salida|date:"d-m-Y" }}
+      ({{ noches }} noche{{ noches|pluralize }}).
+    </p>
+    <div class="table-responsive">
+      <table class="table table-hover bg-white shadow-sm">
+        <thead class="table-light">
+          <tr><th>Habitación</th><th>Tipo</th><th>Capacidad</th><th>Servicios</th><th>Por noche</th><th>Total</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for h in resultados %}
+            <tr>
+              <td class="fw-semibold">{{ h.numero }} <span class="text-muted small">(piso {{ h.piso }})</span></td>
+              <td>{{ h.tipo.nombre }}</td>
+              <td>{{ h.tipo.capacidad }}</td>
+              <td class="small">{{ h.servicios|default:"—" }}</td>
+              <td>{{ h.tipo.precio_noche|clp }}</td>
+              <td class="fw-semibold">{{ h.total_estadia|clp }}</td>
+              <td class="text-end">
+                {% if es_recepcion %}
+                  <a class="btn btn-sm btn-rio" href="{% url 'hotel:reserva_nueva' %}?habitacion={{ h.pk }}&{{ qs_reserva }}">Reservar</a>
+                {% elif es_cliente %}
+                  <a class="btn btn-sm btn-rio" href="{% url 'hotel:reservar' h.pk %}?{{ qs_reserva }}">Reservar</a>
+                {% else %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Inicia sesión para reservar</a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-warning">No hay habitaciones disponibles para esas fechas y cantidad de personas. Prueba con otras fechas.</div>
+  {% endif %}
+{% endif %}
+{% endblock %}

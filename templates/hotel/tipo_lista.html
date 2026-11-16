@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Tipos de habitación{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="h3 mb-0">Tipos de habitación y tarifas</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'hotel:habitacion_lista' %}">Volver a habitaciones</a>
+    <a class="btn btn-rio" href="{% url 'hotel:tipo_nuevo' %}">Nuevo tipo</a>
+  </div>
+</div>
+<div class="table-responsive">
+  <table class="table bg-white shadow-sm">
+    <thead class="table-light"><tr><th>Nombre</th><th>Descripción</th><th>Capacidad</th><th>Precio por noche</th><th>Habitaciones</th><th></th></tr></thead>
+    <tbody>
+      {% for t in tipos %}
+        <tr>
+          <td class="fw-semibold">{{ t.nombre }}</td>
+          <td class="small">{{ t.descripcion|default:"—" }}</td>
+          <td>{{ t.capacidad }}</td>
+          <td>{{ t.precio_noche|clp }}</td>
+          <td>{{ t.total }}</td>
+          <td class="text-end"><a class="btn btn-sm btn-outline-secondary" href="{% url 'hotel:tipo_editar' t.pk %}">Editar</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-muted">No hay tipos registrados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

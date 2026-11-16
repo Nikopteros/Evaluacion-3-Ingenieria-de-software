@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}{{ huesped.nombre_completo }}{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="h3 mb-0">{{ huesped.nombre_completo }}</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'hotel:huesped_editar' huesped.pk %}">Editar datos</a>
+    <a class="btn btn-rio" href="{% url 'hotel:reserva_nueva' %}?huesped={{ huesped.pk }}">Nueva reserva</a>
+  </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">{{ huesped.get_tipo_documento_display }}</dt><dd class="col-sm-9 font-monospace">{{ huesped.numero_documento }}</dd>
+      <dt class="col-sm-3">Correo</dt><dd class="col-sm-9">{{ huesped.correo }}</dd>
+      <dt class="col-sm-3">Teléfono</dt><dd class="col-sm-9">{{ huesped.telefono|default:"—" }}</dd>
+      <dt class="col-sm-3">Nacionalidad</dt><dd class="col-sm-9">{{ huesped.nacionalidad }}</dd>
+      <dt class="col-sm-3">Cuenta web</dt><dd class="col-sm-9">{% if huesped.usuario %}{{ huesped.usuario.username }}{% else %}No tiene{% endif %}</dd>
+      <dt class="col-sm-3">Registrado el</dt><dd class="col-sm-9">{{ huesped.fecha_registro|date:"d-m-Y H:i" }}</dd>
+    </dl>
+  </div>
+</div>
+
+<h2 class="h5">Historial de reservas</h2>
+<div class="table-responsive">
+  <table class="table bg-white shadow-sm">
+    <thead class="table-light"><tr><th>Código</th><th>Habitación</th><th>Llegada</th><th>Salida</th><th>Total</th><th>Estado</th></tr></thead>
+    <tbody>
+      {% for r in reservas %}
+        <tr>
+          <td><a class="font-monospace" href="{% url 'hotel:reserva_detalle' r.pk %}">{{ r.codigo }}</a></td>
+          <td>{{ r.habitacion.numero }} · {{ r.habitacion.tipo.nombre }}</td>
+          <td>{{ r.fecha_entrada|date:"d-m-Y" }}</td>
+          <td>{{ r.fecha_salida|date:"d-m-Y" }}</td>
+          <td>{{ r.total|clp }}</td>
+          <td><span class="badge text-bg-{{ r.estado|color_estado }}">{{ r.get_estado_display }}</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="text-muted">Sin reservas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<a href="{% url 'hotel:huesped_lista' %}">← Volver a huéspedes</a>
+{% endblock %}

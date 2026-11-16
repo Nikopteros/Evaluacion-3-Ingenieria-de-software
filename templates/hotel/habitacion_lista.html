@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Habitaciones{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="h3 mb-0">Habitaciones</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'hotel:tipo_lista' %}">Tipos y tarifas</a>
+    <a class="btn btn-rio" href="{% url 'hotel:habitacion_nueva' %}">Registrar habitación</a>
+  </div>
+</div>
+
+<form method="get" class="d-flex flex-wrap gap-2 mb-3">
+  <select name="estado" class="form-select w-auto">
+    <option value="">Todos los estados</option>
+    {% for valor, etiqueta in estados %}
+      <option value="{{ valor }}" {% if valor == estado_sel %}selected{% endif %}>{{ etiqueta }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-outline-secondary">Filtrar</button>
+</form>
+
+<div class="table-responsive">
+  <table class="table bg-white shadow-sm">
+    <thead class="table-light">
+      <tr><th>N°</th><th>Piso</th><th>Tipo</th><th>Capacidad</th><th>Tarifa</th><th>Servicios</th><th>Estado</th><th>Huésped actual</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for h in habitaciones %}
+        <tr>
+          <td class="fw-semibold">{{ h.numero }}</td>
+          <td>{{ h.piso }}</td>
+          <td>{{ h.tipo.nombre }}</td>
+          <td>{{ h.tipo.capacidad }}</td>
+          <td>{{ h.tipo.precio_noche|clp }}</td>
+          <td class="small">{{ h.servicios|default:"—" }}</td>
+          <td><span class="badge text-bg-{{ h.estado|color_estado }}">{{ h.get_estado_display }}</span></td>
+          <td>
+            {% if h.reserva_en_curso %}
+              <a href="{% url 'hotel:reserva_detalle' h.reserva_en_curso.pk %}">{{ h.reserva_en_curso.huesped.nombre_completo }}</a>
+            {% else %}<span class="text-muted">—</span>{% endif %}
+          </td>
+          <td class="text-end text-nowrap">
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'hotel:habitacion_editar' h.pk %}">Editar</a>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'hotel:habitacion_estado' h.pk %}">Estado</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="9" class="text-muted">No hay habitaciones con ese filtro.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

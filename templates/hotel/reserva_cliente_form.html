@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Reservar habitación {{ habitacion.numero }}{% endblock %}
+{% block contenido %}
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5">Habitación {{ habitacion.numero }}</h2>
+        <p class="mb-1">{{ habitacion.tipo.nombre }} · piso {{ habitacion.piso }}</p>
+        <p class="mb-1">Hasta {{ habitacion.tipo.capacidad }} persona{{ habitacion.tipo.capacidad|pluralize }}</p>
+        <p class="fw-semibold">{{ habitacion.tipo.precio_noche|clp }} por noche</p>
+        {% for s in habitacion.lista_servicios %}<span class="badge rounded-pill text-bg-light border me-1 mb-1">{{ s }}</span>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-1">Solicitar reserva</h1>
+        <p class="text-muted">Tu reserva quedará <strong>pendiente</strong> hasta que recepción la confirme. Te avisaremos por correo.</p>
+        <div class="alert alert-light border">
+          <strong>Cantidad de personas:</strong>
+          {{ form.instance.cantidad_personas }}
+        </div>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {% include 'hotel/_form.html' %}
+          <button class="btn btn-rio">Enviar solicitud</button>
+          <a class="btn btn-outline-secondary" href="{% url 'hotel:disponibilidad' %}">Volver</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

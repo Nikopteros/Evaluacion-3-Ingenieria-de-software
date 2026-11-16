@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Reservas{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h1 class="h3 mb-0">Reservas</h1>
+  <a class="btn btn-rio" href="{% url 'hotel:reserva_nueva' %}">Nueva reserva</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-sm-6 col-lg-3">
+    <select name="estado" class="form-select">
+      <option value="">Todos los estados</option>
+      {% for valor, etiqueta in estados %}
+        <option value="{{ valor }}" {% if valor == estado_sel %}selected{% endif %}>{{ etiqueta }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-sm-6 col-lg-4">
+    <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="Código, huésped, RUT o N° de habitación">
+  </div>
+  <div class="col-sm-6 col-lg-3">
+    <input type="date" name="fecha" value="{{ fecha }}" class="form-control" title="Reservas que incluyen esta fecha">
+  </div>
+  <div class="col-sm-6 col-lg-2 d-flex gap-2">
+    <button class="btn btn-outline-secondary">Filtrar</button>
+    {% if filtros %}<a class="btn btn-link" href="{% url 'hotel:reserva_lista' %}">Limpiar</a>{% endif %}
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-hover bg-white shadow-sm">
+    <thead class="table-light">
+      <tr><th>Código</th><th>Huésped</th><th>Habitación</th><th>Llegada</th><th>Salida</th><th>Noches</th><th>Total</th><th>Estado</th></tr>
+    </thead>
+    <tbody>
+      {% for r in reservas %}
+        <tr>
+          <td><a class="font-monospace" href="{% url 'hotel:reserva_detalle' r.pk %}">{{ r.codigo }}</a></td>
+          <td>{{ r.huesped.nombre_completo }}</td>
+          <td>{{ r.habitacion.numero }} · {{ r.habitacion.tipo.nombre }}</td>
+          <td>{{ r.fecha_entrada|date:"d-m-Y" }}</td>
+          <td>{{ r.fecha_salida|date:"d-m-Y" }}</td>
+          <td>{{ r.noches }}</td>
+          <td>{{ r.total|clp }}</td>
+          <td><span class="badge text-bg-{{ r.estado|color_estado }}">{{ r.get_estado_display }}</span></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="text-muted">No se encontraron reservas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include 'hotel/_paginacion.html' %}
+{% endblock %}

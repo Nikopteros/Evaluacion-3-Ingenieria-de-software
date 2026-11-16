@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block titulo %}Registrarse{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-1">Crear cuenta</h1>
+        <p class="text-muted">Con tu cuenta podrás reservar en línea y revisar tus reservas.
+          Si ya te alojaste con nosotros, usa el mismo documento y correo para vincular tu historial.</p>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h2 class="h6 text-uppercase text-muted">Tus datos</h2>
+              {% with form=huesped_form %}{% include 'hotel/_form.html' %}{% endwith %}
+            </div>
+            <div class="col-md-6">
+              <h2 class="h6 text-uppercase text-muted">Datos de acceso</h2>
+              {% with form=usuario_form %}{% include 'hotel/_form.html' %}{% endwith %}
+            </div>
+          </div>
+          <button class="btn btn-rio">Crear cuenta</button>
+          <a class="btn btn-link" href="{% url 'login' %}">Ya tengo cuenta</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

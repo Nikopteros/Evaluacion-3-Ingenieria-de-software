@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Panel de recepción{% endblock %}
+{% block contenido %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">Panel de recepción</h1>
+    <div class="text-muted">{{ hoy|date:"l j \d\e F \d\e Y"|capfirst }}</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'hotel:disponibilidad' %}">Consultar disponibilidad</a>
+    <a class="btn btn-rio" href="{% url 'hotel:reserva_nueva' %}">Nueva reserva</a>
+  </div>
+</div>
+
+{% if pendientes %}
+  <div class="alert alert-warning d-flex justify-content-between align-items-center">
+    <span>Hay <strong>{{ pendientes }}</strong> reserva{{ pendientes|pluralize }} web pendiente{{ pendientes|pluralize }} de confirmación.</span>
+    <a class="btn btn-sm btn-warning" href="{% url 'hotel:reserva_lista' %}?estado=pendiente">Revisar</a>
+  </div>
+{% endif %}
+
+<!-- Control de habitaciones ocupadas y disponibles -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg">
+    <div class="card shadow-sm h-100"><div class="card-body">
+      <div class="text-muted small">Ocupación</div>
+      <div class="indicador">{{ porcentaje_ocupacion }}%</div>
+      <div class="text-muted small">{{ total }} habitaciones</div>
+    </div></div>
+  </div>
+  {% for etiqueta, cantidad, estado in indicadores %}
+    <div class="col-6 col-lg">
+      <a class="text-decoration-none" href="{% url 'hotel:habitacion_lista' %}?estado={{ estado }}">
+        <div class="card shadow-sm h-100 border-{{ estado|color_estado }}"><div class="card-body">
+          <div class="text-muted small">{{ etiqueta }}</div>
+          <div class="indicador text-{{ estado|color_estado }}">{{ cantidad }}</div>
+        </div></div>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold">Llegadas pendientes de check-in</div>
+      <ul class="list-group list-group-flush">
+        {% for r in llegadas %}
+          <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+            <div>
+              <a href="{% url 'hotel:reserva_detalle' r.pk %}">{{ r.huesped.nombre_completo }}</a>
+              <div class="small text-muted">Hab. {{ r.habitacion.numero }} · hasta {{ r.fecha_salida|date:"d-m" }}
+                {% if r.fecha_entrada < hoy %}<span class="text-danger">· atrasada ({{ r.fecha_entrada|date:"d-m" }})</span>{% endif %}</div>
+            </div>
+            {% if r.estado == 'pendiente' %}
+              <a class="btn btn-sm btn-success" href="{% url 'hotel:reserva_confirmar' r.pk %}">Confirmar</a>
+            {% else %}
+              <a class="btn btn-sm btn-primary" href="{% url 'hotel:reserva_checkin' r.pk %}">Check-in</a>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">No hay llegadas pendientes hoy.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold">Salidas de hoy</div>
+      <ul class="list-group list-group-flush">
+        {% for r in salidas %}
+          <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+            <div>
+              <a href="{% url 'hotel:reserva_detalle' r.pk %}">{{ r.huesped.nombre_completo }}</a>
+              <div class="small text-muted">Hab. {{ r.habitacion.numero }}
+                {% if r.fecha_salida < hoy %}<span class="text-danger">· debía salir el {{ r.fecha_salida|date:"d-m" }}</span>{% endif %}</div>
+            </div>
+            <a class="btn btn-sm btn-warning" href="{% url 'hotel:reserva_checkout' r.pk %}">Check-out</a>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">No hay salidas programadas hoy.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h2 class="h5 mb-3">Estado de las habitaciones</h2>
+<div class="row g-3">
+  {% for h in habitaciones %}
+    <div class="col-6 col-md-4 col-lg-3">
+      <div class="card shadow-sm tarjeta-hab {{ h.estado }} h-100">
+        <div class="card-body py-2">
+          <div class="d-flex justify-content-between">
+            <span class="fw-semibold">{{ h.numero }}</span>
+            <span class="badge text-bg-{{ h.estado|color_estado }}">{{ h.get_estado_display }}</span>
+          </div>
+          <div class="small text-muted">{{ h.tipo.nombre }}</div>
+          {% if h.reserva_en_curso %}
+            <div class="small mt-1">👤 {{ h.reserva_en_curso.huesped.nombre_completo }}</div>
+          {% endif %}
+          <a class="small" href="{% url 'hotel:habitacion_estado' h.pk %}">Cambiar estado</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

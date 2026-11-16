@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load hotel_extras %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<section class="hero p-4 p-md-5 mb-4">
+  <h1 class="display-6 fw-semibold">Bienvenido al Hotel Ríos del Sur</h1>
+  <p class="lead mb-4">Revisa qué habitaciones están libres y reserva en línea, todo el año.</p>
+  <form method="get" action="{% url 'hotel:disponibilidad' %}" class="row g-2 bg-white text-dark rounded-3 p-3 mx-0">
+    {% for field in form %}
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label small mb-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+      </div>
+    {% endfor %}
+    <div class="col-12"><button class="btn btn-rio">Consultar disponibilidad</button></div>
+  </form>
+</section>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h4 mb-0">Nuestras habitaciones</h2>
+  <a href="{% url 'hotel:catalogo' %}">Ver detalle →</a>
+</div>
+<div class="row g-3">
+  {% for tipo in tipos %}
+    <div class="col-sm-6 col-lg-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h3 class="h5">{{ tipo.nombre }}</h3>
+          <p class="text-muted small">{{ tipo.descripcion }}</p>
+          <p class="mb-1">Hasta {{ tipo.capacidad }} persona{{ tipo.capacidad|pluralize }}</p>
+          <p class="fw-semibold mb-0">{{ tipo.precio_noche|clp }} <span class="fw-normal text-muted">/ noche</span></p>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">Aún no hay tipos de habitación registrados.</p>
+  {% endfor %}
+</div>
+{% endblock %}
